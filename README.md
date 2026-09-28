@@ -94,3 +94,9 @@ python3 -m unittest discover -s tests -v
 ```
 
 En Windows utiliza `py -3` en lugar de `python3`. No se incluyen binarios en el repositorio ni en los paquetes publicados.
+
+## Licencia
+
+[MIT](LICENSE) · Copyright (c) 2026 Harys Vizcaino.
+
+La licencia cubre los archivos de este repositorio. Las dependencias descargadas por separado conservan sus propias licencias.
