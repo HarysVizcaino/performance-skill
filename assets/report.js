@@ -21,7 +21,7 @@ export function buildReport(data, workload) {
     actualDurationMs: data.state?.testRunDurationMs ?? null, status, metrics };
   const lines = [
     '# Informe de rendimiento', '', `Resultado de umbrales: **${status}**.`, '',
-    'Confirmar por separado el código de salida y que la ejecución completó la duración prevista. Una ejecución abortada puede producir un resumen parcial.', '',
+    'Los umbrales evalúan las muestras recibidas. El apartado Ejecución confirma si la prueba finalizó o quedó incompleta.', '',
     `Modelo: ${workload.mode}. Duración prevista: ${workload.duration}. Duración observada: ${format(summary.actualDurationMs)} ms.`,
     workload.mode === 'vus' ? `Usuarios configurados: ${workload.vus}.` : `Recorridos previstos por segundo: ${workload.journeysPerSecond}.`, '',
     '| Medición | Valor |', '|---|---:|',
@@ -33,6 +33,8 @@ export function buildReport(data, workload) {
     `| Errores HTTP (%) | ${format(value('http_req_failed', 'rate') * 100)} |`,
     `| Checks correctos (%) | ${format(value('checks', 'rate') * 100)} |`,
     `| Iteraciones descartadas | ${workload.mode === 'vus' ? 'No aplica' : format(value('dropped_iterations', 'count'))} |`, '',
+    '## Por endpoint', '', '| Endpoint | p95 (ms) | p99 (ms) | Errores (%) |', '|---|---:|---:|---:|',
+    ...workload.routes.map((name) => `| ${name} | ${format(value(`http_req_duration{name:${name}}`, 'p(95)'))} | ${format(value(`http_req_duration{name:${name}}`, 'p(99)'))} | ${format(value(`http_req_failed{name:${name}}`, 'rate') * 100)} |`), '',
     '## Umbrales', '', '| Métrica | Criterio | Cumple |', '|---|---|---|',
     ...thresholdRows.map((r) => `| ${r.metric} | ${r.expression} | ${r.ok === true ? 'Sí' : r.ok === false ? 'No' : 'N/D'} |`), '',
     '## Alcance', '',

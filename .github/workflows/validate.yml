@@ -1,0 +1,25 @@
+name: Validate Performance
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Prepare runtime
+        run: python scripts/setup.py
+      - name: Run unit and local integration tests
+        env:
+          PYTHONUTF8: '1'
+        run: python -m unittest discover -s tests -v

@@ -6,3 +6,5 @@ __pycache__/
 !.env.example
 results/
 .runtime.log
+.runtime/
+*.zip

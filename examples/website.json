@@ -1,0 +1,7 @@
+{
+  "mode": "vus", "duration": "30s", "vus": 5,
+  "p95Ms": 500, "p99Ms": 1000, "errorRate": 0.01,
+  "routes": [
+    {"name": "home", "path": "/", "expectedStatus": 200, "contains": "<html", "pauseSeconds": 3}
+  ]
+}

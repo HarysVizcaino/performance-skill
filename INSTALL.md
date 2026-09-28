@@ -1,35 +1,51 @@
-# Instalación y uso
+# Instalación de Performance
 
-La carpeta completa `performance` es la skill. Conserva la carpeta completa con sus recursos internos. El agente administra el motor local de pruebas siguiendo su referencia interna. No necesitas una cuenta de servicios externos.
+## Requisitos
 
-Instalación por proyecto:
+- Claude Code o Codex con terminal habilitada.
+- Git y Python 3.10+ (`python3` en macOS/Linux, `py -3` en Windows).
+- Internet para la primera preparación del motor local.
 
-- Codex: copia la carpeta en `.agents/skills/performance/`.
-- Claude Code: copia la carpeta en `.claude/skills/performance/`.
+Clona el repositorio en la carpeta correspondiente; el nombre final debe ser `performance`:
 
-Instalación personal:
+| Alcance | Claude Code | Codex |
+|---|---|---|
+| Personal | `~/.claude/skills/performance` | `~/.agents/skills/performance` |
+| Proyecto | `.claude/skills/performance` | `.agents/skills/performance` |
 
-- Codex: `~/.agents/skills/performance/`.
-- Claude Code: `~/.claude/skills/performance/`.
+Conserva todos los archivos. Si la carpeta ya existe, actualízala en lugar de superponer otra copia. Abre una sesión nueva tras instalar.
 
-Usa la misma fuente para ambas copias. No dependas de metadatos exclusivos de un agente. Las políticas de permisos de cada entorno siguen aplicándose. Reinicia la sesión si no aparece tras copiarla.
+## Primera prueba
 
-Ejemplo de petición:
+```text
+/performance prueba mi API en http://localhost:3000 con un usuario durante 10 segundos. Revisa el proyecto para elegir un endpoint y genera un informe.
+```
 
-> /performance prueba mi API local con 10 usuarios durante 30 segundos. Consulta productos y abre sus detalles. Exige p95 inferior a 500 ms y genera un informe.
+En Codex escribe `$performance`. Los detalles después del nombre son lenguaje natural: destino, rutas, acciones, carga, duración y objetivos.
 
-> $performance prueba http://localhost:3000 con 50 usuarios durante 2 minutos; menos del 1 % de errores.
+El agente prepara la dependencia de ejecución con `python3 scripts/setup.py` desde la carpeta de la skill. El instalador descarga una versión fija, verifica su integridad y la guarda dentro de `.runtime/`; no instala paquetes globales ni solicita cuentas externas. Se respetan los permisos de tu entorno.
 
-Todo lo que escribas después del comando describe la prueba. Puedes indicar URL, endpoints, acciones, usuarios, duración y objetivos en lenguaje natural. El agente revisa el proyecto para completar el contexto y solo pregunta por datos imprescindibles que falten.
+## Actualizar
 
-En Codex también puedes invocar `$performance`; en Claude Code, `/performance`.
+Desde la carpeta instalada:
 
-La plantilla incluye `/health` con JSON `{"status":"ok"}` como ejemplo. Adapta `workload.json` antes de usarla. Para otro tipo de respuesta, elimina `jsonField`/`equals` y añade comprobaciones de negocio adecuadas al script.
+```sh
+git pull --ff-only
+python3 scripts/setup.py
+```
 
-Para llegadas constantes, usa `mode: "arrival"`, `rate: 2`, `preAllocatedVUs: 2`, `maxVUs: 5` y `pauseSeconds: 0` en cada ruta. `rate` representa recorridos por segundo, no solicitudes por segundo.
+Conserva tus pruebas personalizadas en el proyecto de la aplicación, no dentro de la instalación de la skill. El script de preparación también permite reparar una descarga incompleta.
 
-Guarda la autenticación en la variable de entorno `PERFORMANCE_BEARER_TOKEN`; nunca la pongas en el comando de ejemplo ni en el JSON. La plantilla básica comparte esa identidad. Recorridos multiusuario y operaciones de escritura requieren adaptar el script.
+## Resolver problemas
 
-Los informes se crean en `OUTPUT_DIR`, que debe existir. Usa una carpeta nueva por ejecución para no sobrescribir evidencia. El resultado de umbrales debe acompañarse del código de salida de la ejecución y la confirmación de ejecución completa.
+- **El comando no aparece:** verifica la ubicación y que `SKILL.md` esté directamente dentro de `performance`; abre una sesión nueva.
+- **Falta Python:** instala Python 3.10+ y comprueba su disponibilidad en la terminal del agente.
+- **No se prepara el motor:** verifica internet, permisos de escritura y plataforma compatible. El instalador no acepta descargas cuya integridad no coincida.
+- **Responde con 301/302:** pide al agente que compruebe la URL canónica antes de probar. Las pruebas no siguen redirecciones automáticamente.
+- **401/403:** prepara una cuenta de prueba y autenticación válida. No pegues tokens en el prompt ni los guardes en el repositorio.
+- **429:** puede haber un límite de solicitudes. El informe no lo interpreta automáticamente como falta de CPU.
+- **Prueba incompleta:** revisa el motivo y los tiempos; no la presentes como carga soportada.
 
-Fuentes de compatibilidad: https://developers.openai.com/codex/skills/ y https://code.claude.com/docs/en/skills.
+La autenticación opcional se obtiene de `PERFORMANCE_BEARER_TOKEN` en el entorno. Los informes no contienen el token ni el cuerpo de las respuestas. El diagnóstico oculto está destinado al agente y debe revisarse antes de compartirlo.
+
+Cada ejecución requiere una carpeta nueva. Los resultados anteriores no se sobrescriben.
