@@ -1,0 +1,18 @@
+{
+  "mode": "vus",
+  "duration": "10s",
+  "vus": 1,
+  "p95Ms": 500,
+  "p99Ms": 1000,
+  "errorRate": 0.01,
+  "routes": [
+    {
+      "name": "health",
+      "path": "/health",
+      "expectedStatus": 200,
+      "jsonField": "status",
+      "equals": "ok",
+      "pauseSeconds": 1
+    }
+  ]
+}
